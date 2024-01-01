@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPTのように文字を少しずつ表示するサンプル</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let ws = null;
+            const log = document.getElementById("log");
+            const connectButton = document.getElementById("connect");
+
+            function connect() {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    log.textContent += "既に接続されています。\n";
+                    return;
+                }
+
+                ws = new WebSocket("ws://127.0.0.1:6789/");
+
+                ws.onopen = function () {
+                    log.textContent += "接続が開かれました。\n";
+                    connectButton.disabled = true;
+                };
+
+                ws.onmessage = function (event) {
+                    log.textContent += event.data;
+                };
+
+                ws.onclose = function () {
+                    log.textContent += "接続が閉じられました。\n";
+                    connectButton.disabled = false;
+                };
+            }
+
+            function sendMessage() {
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                    log.textContent += "接続が開かれていません。\n";
+                    return;
+                }
+                const message = document.getElementById("message").value;
+                ws.send(message);
+                log.textContent += message;
+            }
+
+            document.getElementById("connect").addEventListener("click", connect);
+            document.getElementById("send").addEventListener("click", sendMessage);
+        });
+    </script>
+</head>
+
+<body>
+    <h1>ChatGPTのように文字を少しずつ表示するサンプル</h1>
+    <button id="connect">(1)WebSocketに接続する</button><br><br>
+    プロンプト：<br>
+    <input type="text" id="message"><br>
+    <button id="send">(2)プロンプトを送信する</button>
+    <pre id="log"></pre>
+</body>
+
+</html>

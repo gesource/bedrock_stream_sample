@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  backend:
+    build: ./docker/backend
+    tty: true
+    ports:
+      - "6789:6789"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+
+  frontend:
+    build: ./docker/frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
